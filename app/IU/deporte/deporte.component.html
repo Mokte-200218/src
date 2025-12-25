@@ -1,0 +1,34 @@
+<section class="header">
+  <h2>Deportes</h2>
+
+  <input
+    type="text"
+    [(ngModel)]="search"
+    placeholder="Buscar deporte"
+  />
+  <button (click)="buscar()">Buscar</button>
+
+  <button *ngIf="esCoordinador()">+ Nuevo Deporte</button>
+</section>
+
+<section class="grid">
+  <article
+    class="card"
+    *ngFor="let deporte of deportes"
+    (click)="irAlumnos(deporte.id)"
+  >
+   
+    <h3> {{deporte.id}} </h3>
+    <h3>{{ deporte.nombre }}</h3>
+    <p>{{ deporte.descripcion }}</p>
+    <h3>{{deporte.imagen_nombre}}</h3>
+    <h3>{{rol}}</h3>
+
+    <div class="actions" *ngIf="esCoordinador()">
+      <button (click)="$event.stopPropagation()">Editar</button>
+      <button (click)="eliminar(deporte.id); $event.stopPropagation()">
+        Eliminar
+      </button>
+    </div>
+  </article>
+</section>

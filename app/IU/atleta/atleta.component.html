@@ -1,0 +1,35 @@
+<h2>Detalle del Atleta</h2>
+<button (click)="regresarAlumnos()">
+    Volver a Deportes
+</button>
+<section *ngIf="atleta">
+  <p><strong>Nombre:</strong> {{ atleta.nombre }}</p>
+  <p><strong>Matrícula:</strong> {{ atleta.matricula }}</p>
+  <p><strong>Peso:</strong> {{ atleta.peso }} kg</p>
+  <p><strong>Altura:</strong> {{ atleta.altura }} m</p>
+</section>
+
+<button (click)="cargarRendimiento()">
+  Ver rendimiento
+</button>
+
+<div *ngIf="svgRendimiento" [innerHTML]="svgRendimiento"></div>
+
+<hr />
+
+<h3>Documentos</h3>
+
+<input
+  *ngIf="esCoordinador()"
+  type="file"
+  (change)="subirDocumento($event)"
+/>
+
+<ul>
+  <li *ngFor="let doc of documentos">
+    {{ doc.nombre }}
+    <button *ngIf="esCoordinador()" (click)="eliminarDocumento(doc.id)">
+      Eliminar
+    </button>
+  </li>
+</ul>

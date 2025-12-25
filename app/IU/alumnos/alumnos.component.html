@@ -1,0 +1,24 @@
+<h2>Alumnos del Deporte</h2>
+
+<button (click)="cargarAnalisis()">
+  Ver análisis del deporte
+</button>
+<button (click)="regresarDeportes()">
+    Volver a Deportes
+</button>
+
+<section class="graficas" *ngIf="analisisSvg">
+  <div [innerHTML]="analisisSvg"></div>
+  <div [innerHTML]="rankingSvg"></div>
+</section>
+
+<section class="grid">
+  <article
+    class="card"
+    *ngFor="let atleta of atletas"
+    (click)="verAtleta(atleta.id)"
+  >
+    <h3>{{ atleta.nombre }}</h3>
+    <p>Matrícula: {{ atleta.matricula }}</p>
+  </article>
+</section>
