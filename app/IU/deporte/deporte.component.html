@@ -26,9 +26,7 @@
 
     <div class="actions" *ngIf="esCoordinador()">
       <button (click)="$event.stopPropagation()">Editar</button>
-      <button (click)="eliminar(deporte.id); $event.stopPropagation()">
-        Eliminar
-      </button>
+      <button (click)="eliminar(deporte.id); $event.stopPropagation()">Eliminar</button>
     </div>
   </article>
 </section>
