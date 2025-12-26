@@ -35,7 +35,7 @@ export class AtletaComponent {
     this.loadAtleta();
     this.loadDocumentos();
   }
-  regresarAlumnos(){
+  regresarDeportes(){
     this.router.navigate(['/deportes']);
   }
 
