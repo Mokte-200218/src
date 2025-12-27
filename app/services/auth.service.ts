@@ -2,11 +2,14 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Login, LoginResponse } from '../interfaces/Login';
 import { tap } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private http = inject(HttpClient);
   private readonly API_URL = 'http://localhost:8000';
+
+   private router = inject(Router);
 
   login(data: Login) {
     return this.http
@@ -32,7 +35,10 @@ export class AuthService {
     return !!this.getToken();
   }
 
+  //CERRAR SESION
   logout() {
+    localStorage.removeItem('token');
     localStorage.clear();
+    this.router.navigate(['/login']);
   }
 }

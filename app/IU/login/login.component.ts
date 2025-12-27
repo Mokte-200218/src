@@ -1,5 +1,5 @@
-import { Component, inject } from '@angular/core';
-import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
+import { FormBuilder, Validators, ReactiveFormsModule, NgForm, NgModel, NgModelGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
@@ -14,6 +14,7 @@ export class LoginComponent {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
+  private cdr = ChangeDetectorRef;
 
   loading = false;
   error = '';
@@ -34,9 +35,11 @@ export class LoginComponent {
         this.router.navigate(['/deportes']);
       },
       error: () => {
-        this.error = 'Credenciales incorrectas';
-        this.loading = false;
+        this.loading = false; 
+        this.error = 'Correo o contraseña erroneo';
+          
       },
+      
     });
   }
 }

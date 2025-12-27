@@ -1,3 +1,7 @@
+<app-shared-header themeClass="theme-green">
+  <h1>⚽ Panel de Deportes</h1>
+  <span>Bienvenido, Admin</span>
+</app-shared-header>
 <section class="header">
   <h2>Deportes</h2>
 
@@ -7,8 +11,16 @@
     placeholder="Buscar deporte"
   />
   <button (click)="buscar()">Buscar</button>
+        @if (esCoordinador()) {
+          <p class="btn-New-Sport">
+            <button >+ Nuevo Deporte</button>
+            <button >+ Crear nuevo usuario </button>
+            <button >Asignar coach a deporte </button>
+          </p>
+        }
+ 
 
-  <button *ngIf="esCoordinador()">+ Nuevo Deporte</button>
+  
 </section>
 
 <section class="grid">

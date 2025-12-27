@@ -1,23 +1,51 @@
-<div class="login-container">
-  <form [formGroup]="loginForm" (ngSubmit)="submit()">
-    <h2>Iniciar sesión</h2>
+<div class="login-page">
+  <!-- Panel Izquierdo: Logo y Texto -->
+  <div class="left-panel">
+    <div class="content-wrapper">
+      <img src="/cosib.svg" alt="COSIB Logo" class="logo">
+      <p class="description">
+        Coordinación de Servicios integrados<br>
+        para el Bienestar de la Unidad Iztapalapa
+      </p>
+    </div>
+  </div>
 
-    <input
-      type="text"
-      formControlName="identifier"
-      placeholder="Correo o Matrícula"
-    />
+  <!-- Panel Derecho: Formulario -->
+  <div class="login-container">
+    <form [formGroup]="loginForm" (ngSubmit)="submit()" class="login-form">
+      <h2>Accedé</h2>
+      <h3>Inicia sesión para continuar</h3>
+      <hr class="separator">
 
-    <input
-      type="password"
-      formControlName="contrasena"
-      placeholder="Contraseña"
-    />
+      <div class="form-group">
+        <label for="identifier">Escribe tu correo electrónico o matrícula</label>
+        <input
+          id="identifier"
+          type="text"
+          formControlName="identifier"
+          placeholder="hola@sitioincreible.com.ar"
+        />
+      </div>
 
-    <button type="submit" [disabled]="loading">
-      {{ loading ? 'Ingresando...' : 'Ingresar' }}
-    </button>
+      <div class="form-group">
+        <label for="password">Escribe tu contraseña</label>
+        <input
+          id="password"
+          type="password"
+          formControlName="contrasena"
+          placeholder="******"
+        />
+      </div>
 
-    <p class="error" *ngIf="error">{{ error }}</p>
-  </form>
+      <button type="submit" [disabled]="loading" class="btn-submit">
+        {{ loading ? 'INGRESANDO...' : 'ACCEDER' }}
+      </button>
+
+      @if (error) {
+          <p class="error">
+            {{ error }}
+          </p>
+        }
+    </form>
+  </div>
 </div>
