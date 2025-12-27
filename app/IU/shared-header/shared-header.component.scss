@@ -1,0 +1,55 @@
+
+
+header {
+     display: flex;
+  justify-content: space-between;
+  align-items: center;
+   /* 1. Centrado y forma de rectángulo */
+           /* Ocupa el 90% del ancho de la pantalla */
+  max-width: 1200px;     /* No crecerá más de esto en pantallas muy grandes */
+  margin: 20px auto;     /* 20px de separación arriba/abajo y AUTO lo centra horizontalmente */
+  
+  /* 2. Bordes curvos */
+  border-radius: 15px;   /* Ajusta este valor para más o menos curva */
+  
+  /* 3. Espaciado interno */
+  padding: 15px 40px;
+  
+  /* 4. Estética adicional (recomendada para que se note el efecto flotante) */
+  box-sizing: border-box;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Sombra suave para darle profundidad */
+  transition: all 0.3s ease;
+    .logo {
+        width: 220px;  /* Ancho fijo */
+        height: 100px; /* Alto fijo */
+        border-radius: 2%; /* Si la quieres circular */
+    }
+      
+
+  // Variantes de color
+  &.theme-green {
+    background-color: #5ca823;
+    color: white;
+    .btn-logout { background: #1a512e; }
+  }
+
+  &.theme-beige {
+    background-color: #f6f1e3;
+    color: #1a1a1a;
+    border-bottom: 2px solid #ddd;
+    .btn-logout { background: #c62828; }
+  }
+}
+
+.btn-logout {
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  
+  &:hover {
+    filter: brightness(1.2);
+  }
+}

@@ -5,11 +5,13 @@ import { DeportesService } from '../../services/deportes.service';
 import { AuthService } from '../../services/auth.service';
 import { Deporte } from '../../interfaces/deporte.model';
 import { Router } from '@angular/router';
+import { SharedHeaderComponent } from '../shared-header/shared-header.component';
+
 
 @Component({
-    selector: 'app/deportes',
+  selector: 'app/deportes',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, SharedHeaderComponent],
   templateUrl: './deporte.component.html',
   styleUrls: ['./deporte.component.scss'],
 })
@@ -31,6 +33,7 @@ export class DeportesComponent {
       this.deportes = res;
     });
   }
+
 
   buscar() {
     if (!this.search) {
@@ -54,8 +57,10 @@ export class DeportesComponent {
   irAlumnos(deporteId: number) {
     this.router.navigate(['/alumnos', deporteId]);
   }
+  
 
   esCoordinador(): boolean {
     return this.rol === 'coordinador';
   }
+   
 }

@@ -5,10 +5,11 @@ import { AtletasService } from '../../services/atletas.service';
 import { AnalisisService } from '../../services/analisis.service';
 import { AuthService } from '../../services/auth.service';
 import { Atleta } from '../../interfaces/atleta.model';
+import { SharedHeaderComponent } from '../shared-header/shared-header.component';
 
 @Component({
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, SharedHeaderComponent],
   templateUrl: './alumnos.component.html',
   styleUrls: ['./alumnos.component.scss'],
 })
