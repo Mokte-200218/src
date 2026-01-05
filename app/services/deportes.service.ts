@@ -19,7 +19,7 @@ export class DeportesService {
     return this.http.get<Deporte>(`${this.API_URL}/deportes/${id}`);
   }
    //crear deporte
-  crearDeporte(data: DeporteCreateRequest) {
+  createSport(data: DeporteCreateRequest) {
     const formData = new FormData();
     formData.append('nombre', data.nombre);
     if (data.descripcion) formData.append('descripcion', data.descripcion);
@@ -27,47 +27,47 @@ export class DeportesService {
   }
 
   //busqueda por nombre de deporte
-  getByNombre(nombre: string) {
+  getByName(nombre: string) {
     return this.http.get<Deporte>(`${this.API_URL}/deportes/nombre/${nombre}`);
   }
 
   //actualizar deporte
-  updateDeporte(id: number, data: DeporteUpdateRequest) {
+  updateSport(id: number, data: DeporteUpdateRequest) {
     return this.http.put(`${this.API_URL}/deportes/${id}`, data);
   }
 
-  //Para subir y obtener la imagen
-  subirImagen(deporteId: number, imagen: File) {
+  //Para subir la imagen del deporte
+  postImage(sportId: number, imagen: File) {
     const formData = new FormData();
     formData.append('imagen', imagen);
-
     return this.http.put(
-      `${this.API_URL}/deportes/${deporteId}/imagen`,
+      `${this.API_URL}/deportes/${sportId}/imagen`,
       formData
     );
   }
-obtenerImagen(deporteId: number) {
-  // Quitamos responseType: 'text' para que Angular lo parsee como JSON automáticamente
-  return this.http.get<any>(
-    `${this.API_URL}/deportes/${deporteId}/imagen`
-  );
-}
+  //obtiene imagen de un deporte mediante id del deporte
+  getImage(sportId: number) {
+    return this.http.get<any>(
+      `${this.API_URL}/deportes/${sportId}/imagen`
+    );
+  }
 
   // crear usuario coach | coordinador
-  crearUsuario(data: Usuario) {
+  createUser(data: Usuario) {
     return this.http.post(`${this.API_URL}/usuarios`, data);
   }
   // obtiene todos los usuarios
-  getUsuarios() {
+  getUsers() {
     return this.http.get<Usuario[]>(`${this.API_URL}/usuarios`);
   }
 
   //Crea asignacion de un coach a un deporte
-  asignarCoach(data: DeporteUsuarioRequest) {
+  assignCoach(data: DeporteUsuarioRequest) {
     return this.http.post(`${this.API_URL}/deporte_usuario`, data);
   }
 
 
+  //actualizar imagen de deporte mediante id 
   updateDeporteImagen(id: number, imagen: File) {
     const formData = new FormData();
     formData.append('imagen', imagen);

@@ -19,33 +19,39 @@ export class DashboardComponent {
   svgGlobal = '';
   rol = this.authService.getRol();
 
+  //cargar al iniciar
   ngOnInit() {
     this.loadMetrics();
   }
 
+  //cargar metricas de evaluacion
   loadMetrics() {
     this.dashboardService.getMetrics()
       .subscribe(res => this.metrics = res);
   }
 
-  cargarGrafica() {
+  //cargar graficas
+  loadGrafic() {
     this.dashboardService.graficaGlobal()
       .subscribe(svg => this.svgGlobal = svg);
   }
 
-  descargarCSV() {
+  //descargar formatos CSV
+  downloadCsv() {
     this.exportService.exportCSV().subscribe(blob => {
-      this.descargar(blob, 'reporte.csv');
+      this.download(blob, 'reporte.csv');
     });
   }
 
-  descargarPDF() {
+  // descargar documentos PDF
+  downloadPDF() {
     this.exportService.exportPDF().subscribe(blob => {
-      this.descargar(blob, 'reporte.pdf');
+      this.download(blob, 'reporte.pdf');
     });
   }
 
-  descargar(blob: Blob, nombre: string) {
+  //convertir a formato descargable desde el navegador
+  download(blob: Blob, nombre: string) {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -54,7 +60,8 @@ export class DashboardComponent {
     window.URL.revokeObjectURL(url);
   }
 
-  esCoordinador() {
+  //verificar que el usuario sea coordinador
+  isCoordinator() {
     return this.rol === 'coordinador';
   }
 }

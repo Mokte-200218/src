@@ -3,6 +3,11 @@ export interface DeporteUsuario {
   usuario_id: number;
   deporte_id: number;
   fecha_asignacion: string;
+} 
+
+export interface NombreUsuario {
+  nombre_Usuario: string;
+  nombre_Deporte: string;
 }
 
 export interface DeporteUsuarioRequest {

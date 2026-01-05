@@ -1,35 +1,229 @@
-<h2>Detalle del Atleta</h2>
-<button (click)="regresarDeportes()">
-    Volver a Deportes
-</button>
-<section *ngIf="atleta">
-  <p><strong>Nombre:</strong> {{ atleta.nombre }}</p>
-  <p><strong>Matrícula:</strong> {{ atleta.matricula }}</p>
-  <p><strong>Peso:</strong> {{ atleta.peso }} kg</p>
-  <p><strong>Altura:</strong> {{ atleta.altura }} m</p>
+<app-shared-header themeClass="theme-green">
+  <h1> Expediente: {{ atleta?.nombre }}</h1>
+  <!-- Mostramos el nombre del deporte dinámicamente -->
+  <span>Deporte: <strong>{{ deporteActual?.nombre }}</strong></span>
+</app-shared-header>
+
+<div class="container">
+  <!-- INFO Y ACCIONES -->
+  <section class="main-info">
+    <button (click)="return()">Regresar</button>
+    <button (click)="showEditAtletaModal = true">Actualizar Perfil</button>
+    <button (click)="openNewModalPreview()">+ Registrar Nuevo Avance</button>
+    <button (click)="seeAnalysis()">📊 Análisis Gráfico</button>
+  </section>
+
+  <!-- LISTADO DE AVANCES -->
+  <section class="avances-list">
+    <h3>Historial de Avances</h3>
+    <div class="card-avance" *ngFor="let av of avances">
+      <div class="header-av">
+        <strong>{{ av.fecha_avance | date:'longDate' }}</strong>
+        <p>{{ av.descripcion_avance }}</p>
+      </div>
+      <div class="btns">
+        <button (click)="openEditModalPreview(av)">Editar</button>
+        <button (click)="av.id && deleteProgress(av.id)" class="btn-del">
+          Eliminar
+        </button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- MODAL AVANCE (Estilo Institucional) -->
+<div class="modal" *ngIf="showAvanceModal">
+  <form [formGroup]="avanceForm">
+    <div class="modal-header">
+      <span class="cosib-logo">COSIB</span>
+      <h2>{{ avanceEditandoId ? 'Editar' : 'Nuevo' }} Avance Físico</h2>
+    </div>
+
+    <div class="form-grid">
+      <div class="field full-width">
+        <label>Descripción:</label>
+        <input formControlName="descripcion_avance" placeholder="Ej: Evaluación primer mes">
+      </div>
+      
+      <div class="field">
+        <label>Fecha:</label>
+        <input type="date" formControlName="fecha_avance">
+      </div>
+
+      <!-- Métricas de Fuerza -->
+      <div class="field"><label>Sentadilla Máx (kg):</label><input type="number" formControlName="fuerza_sentadilla_max"></div>
+      <div class="field"><label>Press Pecho (kg):</label><input type="number" formControlName="fuerza_press_pecho_max"></div>
+      <div class="field"><label>Peso Muerto (kg):</label><input type="number" formControlName="fuerza_peso_muerto_max"></div>
+      
+      <!-- Repeticiones -->
+      <div class="field"><label>Dominadas:</label><input type="number" formControlName="repeticiones_dominadas_max"></div>
+      <div class="field"><label>Lagartijas:</label><input type="number" formControlName="repeticiones_lagartijas_max"></div>
+      
+      <!-- Potencia y Saltos -->
+      <div class="field"><label>Salto Vertical (cm):</label><input type="number" formControlName="distancia_salto_vertical"></div>
+      <div class="field"><label>Sprint 20m (s):</label><input type="number" formControlName="potencia_sprint_20m"></div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-submit" (click)="saveProgress()">
+        {{ avanceEditandoId ? 'ACTUALIZAR' : 'GUARDAR' }}
+      </button>
+      <button class="btn-cancel" (click)="showAvanceModal = false">CANCELAR</button>
+    </div>
+  </form>
+</div>
+
+
+ 
+<div class="container">
+  <div class="main-grid">
+    <!-- PANEL IZQUIERDO: INFORMACIÓN -->
+    <section class="info-card card">
+      <div class="card-header">
+        <h2>Datos Generales</h2>
+       
+        <button class="btn-edit" (click)="showEditAtletaModal = true">📝 Editar Datos</button>
+      </div>
+       <div class="data-row"><strong>Nombre: </strong> {{ atleta?.nombre }}</div>
+        <div class="data-row"><strong>Matricula: </strong> {{ atleta?.matricula }}</div>
+      <div class="data-row"><strong>Email: </strong> {{ atleta?.correo }}</div>
+      <div class="data-row"><strong>Peso: </strong> {{ atleta?.peso }} kg</div>
+      <div class="data-row"><strong>Altura: </strong> {{ atleta?.altura }} cm</div>
+      <div class="data-row"><strong>Estado:</strong> 
+        <span class="badge" [class.active]="atleta?.activo">{{ atleta?.activo ? 'Activo' : 'Inactivo' }}</span>
+      </div>
+       <div class="data-row"><strong>Fecha de Nacimiento:</strong> {{ atleta?.fecha_nacimiento| date:"d 'de' MMMM 'de' y" }}</div>
+
+      <hr>
+
+      <h3>Documentación</h3>
+<!-- SECCIÓN DE DOCUMENTOS -->
+<section class="info-card card document-section">
+  <div class="card-header">
+    <h2><i class="fas fa-folder-open"></i> Expediente Digital</h2>
+  </div>
+  <hr class="divider">
+
+  <div class="docs-grid">
+    
+    <!-- DOCUMENTO: PERMISO TUTOR -->
+    <div class="doc-box">
+      <div class="doc-header">
+        <i class="fas fa-file-pdf icon-tutor"></i>
+        <span>Carta Responsiva (Tutor)</span>
+      </div>
+      
+      <div class="doc-body">
+        @if (getDocByTipo('permiso_tutor'); as doc) {
+          <!-- Si el documento YA EXISTE -->
+          <div class="file-info">
+            <small>{{ doc.permiso_nombre }}</small>
+            <p>Subido el: {{ doc.fecha_creacion | date:'dd/MM/yyyy' }}</p>
+          </div>
+          <div class="action-buttons">
+              <button class="btn-download" (click)="uploadDoc(doc)">
+                <i class="fas fa-download"></i> Descargar Documento
+              </button>
+            <button class="btn-delete-icon" (click)="deleteDoc(doc.id)">
+              <i class="fas fa-trash"></i> Eliminar
+            </button>
+          </div>
+        } @else {
+          <!-- Si el documento NO EXISTE -->
+          <p class="no-file-msg">Sin archivo cargado</p>
+          <input type="file" #fileTutor (change)="onUploadFile($event, 'permiso_tutor')" hidden>
+          <button class="btn-upload-new" (click)="fileTutor.click()">
+            <i class="fas fa-plus"></i> SUBIR PERMISO
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- DOCUMENTO: PERMISO MÉDICO -->
+    <div class="doc-box">
+      <div class="doc-header">
+        <i class="fas fa-file-medical icon-medico"></i>
+        <span>Certificado Médico</span>
+      </div>
+
+      <div class="doc-body">
+        @if (getDocByTipo('permiso_medico'); as doc) {
+          <div class="file-info">
+            <small>{{ doc.permiso_nombre }}</small>
+            <p>Subido el: {{ doc.fecha_creacion | date:'dd/MM/yyyy' }}</p>
+          </div>
+          <div class="action-buttons">
+              <button class="btn-download" (click)="uploadDoc(doc)">
+                <i class="fas fa-download"></i> Descargar Documento
+              </button>
+            <button class="btn-delete-icon" (click)="deleteDoc(doc.id)">
+              <i class="fas fa-trash"></i>Eliminar 
+            </button>
+          </div>
+        } @else {
+          <p class="no-file-msg">Sin archivo cargado</p>
+          <input type="file" #fileMedico (change)="onUploadFile($event, 'permiso_medico')" hidden>
+          <button class="btn-upload-new" (click)="fileMedico.click()">
+            <i class="fas fa-plus"></i> SUBIR CERTIFICADO
+          </button>
+        }
+      </div>
+    </div>
+
+  </div>
 </section>
+    </section>
 
-<button (click)="cargarRendimiento()">
-  Ver rendimiento
-</button>
+   
+  </div>
+</div>
 
-<div *ngIf="svgRendimiento" [innerHTML]="svgRendimiento"></div>
+<!-- MODAL EDITAR ATLETA (Diseño Institucional) -->
+<div class="modal" *ngIf="showEditAtletaModal">
+  <form [formGroup]="atletaForm">
+    <div class="modal-header">
+      <span class="cosib-logo">COSI B</span>
+      <h2>Actualizar Información</h2>
+    </div> 
+    <div class="form-grid">
+      <div class="field"><label>Nombre</label><input formControlName="nombre"></div>
+      <div class="field"><label>Matrícula</label><input formControlName="matricula"></div>
+      <div class="field"><label>Correo</label><input formControlName="correo"></div>
+      <div class="field"><label>Peso</label><input type="number" formControlName="peso"></div>
+      <div class="field"><label>Altura</label><input type="number" formControlName="altura"></div>
+            <div class="field full-width">
+        <label class="checkbox-label">
+          <input type="checkbox" formControlName="activo" /> Atleta con estatus activo
+        </label>
+      </div>
+      <div class="field">
+        <label>Fecha de Nacimiento:</label>
+        <input type="date" formControlName="fecha_nacimiento" />
+      </div>
+    </div>
 
-<hr />
+    <div class="modal-footer">
+      <button class="btn-submit" (click)="updateAthlete()">GUARDAR CAMBIOS</button>
+      <button class="btn-cancel" (click)="showEditAtletaModal = false">CERRAR</button>
+    </div>
+  </form>
+</div>
+  
+<!-- MODAL GRÁFICA ANALISIS -->
 
-<h3>Documentos</h3>
+<div class="modal svg-modal" *ngIf="showAnalisisModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <span class="cosib-logo">COSI B</span>
+      <h2>Análisis de Rendimiento</h2>
+    </div>
 
-<input
-  *ngIf="esCoordinador()"
-  type="file"
-  (change)="subirDocumento($event)"
-/>
+    <div class="svg-render-container" [innerHTML]="analisisSvg"></div>
+    <div class="modal-footer">
+      <button class="btn-submit" (click)="showAnalisisModal = false">CERRAR ANÁLISIS</button>
+    </div>
+  </div>
+</div>
 
-<ul>
-  <li *ngFor="let doc of documentos">
-    {{ doc.nombre }}
-    <button *ngIf="esCoordinador()" (click)="eliminarDocumento(doc.id)">
-      Eliminar
-    </button>
-  </li>
-</ul>
+
+

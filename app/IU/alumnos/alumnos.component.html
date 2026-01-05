@@ -1,29 +1,222 @@
 <app-shared-header themeClass="theme-green">
-  <h1>⚽ Alumnos del Deporte {{deporteId}}</h1>
-  <span> Entrenador a cargo</span>
+  <h1> Alumnos: {{ deporteInfo?.nombre}}
+
+  </h1>
 
 </app-shared-header>
+ 
+<!-- CONTENEDOR PRINCIPAL QUE ABARCA TODO EL FONDO -->
+<div class="page-wrapper">
+  <div class="split-container">
+    
+    <!-- COLUMNA IZQUIERDA -->
+    <div class="left-panel">
+      <button class="btn-back" (click)="returnSports()">
+        <i class="fas fa-arrow-left"></i> Volver a Deportes
+      </button>
+      @if (coachAsignado) {
+        <div class="coach-banner">
+          <span>Entrenador a cargo: <strong>{{ coachAsignado }}</strong></span>
+        </div>
+      }
+       
+      <!-- LISTA DESPLAZABLE -->
+      <div class="list-container">
+        <section class="grid">
+          <article class="" *ngFor="let atleta of atletas" (click)="goAthlete(atleta.id)">
+            <div class="athlete-card">
+                <div class="card-header">
+                    <div class="avatar-circle">👤</div>
+                    </div>
+                    <div class="card-content">
+                      <div class="info">
+                      <h3>{{ atleta.nombre }}</h3>
+                      <p class="matricula">Matrícula: {{ atleta.matricula }}</p>
+                      </div>
+                    <span class="status-badge" [class.inactive]="!atleta.activo">
+                      {{ atleta.activo ? 'Activo' : 'Inactivo' }} <br>
+                      
+                    </span>
+                
+                </div>
+            </div>
+            
+              @if (isCoordinator()) {
+                 <button class="btn-delete" (click)="$event.stopPropagation();deleteAthlete(atleta.id)">Eliminar Alumno</button>
+              }
+            
+           
+
+          </article>
+          
+        </section>
+        
+      </div>
+
+      <!-- BOTONES DE ACCIÓN INFERIORES -->
+      <div class="bottom-actions">
+        
+        <button class="btn-green-action" (click)="openEdithCoach()" *ngIf="isCoordinator()">
+          CAMBIAR COACH
+        </button>
+        <button class="btn-green-action" (click)="abrirCrearAtleta()">
+          REGISTRAR ATLETA
+        </button>
+      </div>
+    </div>
+<div class="right-panel">
+    <h2>Análisis de <br> Rendimiento</h2>
+    
+    <div class="graphics-placeholder-box">
+        <i class="fas fa-chart-pie" style="font-size: 4rem; color: #ccc;"></i>
+        <p>Visualiza el progreso grupal y el ranking de atletas.</p>
+    </div>
+    <div class="button-group-vertical">
+      <button class="btn-ranking" (click)="openModalGraph('analisis')">
+        VER RENDIMIENTO
+      </button>
+      <button class="btn-ranking btn-purple" (click)="openModalGraph('ranking')">
+        VER RANKING
+      </button>
+    </div>
+</div>
+
+<!-- MODAL ÚNICO DE GRÁFICAS -->
+ @if (showGraficasModal) {
+  <div class="modal modal-xl" *ngIf="showGraficasModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <span class="cosib-logo">COSIB</span>
+      <!-- TABS PARA INTERCALAR -->
+      <div class="tabs-container">
+        <button [class.active]="graficaVisible === 'analisis'" 
+        (click)="graficaVisible = 'analisis'">
+          ANÁLISIS GRUPAL
+        </button>
+        <button [class.active]="graficaVisible === 'ranking'" 
+        (click)="graficaVisible = 'ranking'">
+          RANKING ATLETAS
+        </button>
+      </div>
+      <button class="close-x" (click)="showGraficasModal = false">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <div *ngIf="cargando" class="loader">Procesando datos...</div>
+
+        <!-- Renderizado intercalado -->
+        <div class="chart-render-box" *ngIf="!cargando">
+            <div class="chart-wrapper" 
+                 *ngIf="graficaVisible === 'analisis' && analisisSvgSafe" 
+                 [innerHTML]="analisisSvgSafe">
+            </div>
+            
+            <div class="chart-wrapper" 
+                 *ngIf="graficaVisible === 'ranking' && rankingSvgSafe" 
+                 [innerHTML]="rankingSvgSafe">
+            </div>
+
+            <!-- Si no hay datos -->
+            <div class="no-data" *ngIf="(graficaVisible === 'analisis' && !analisisSvgSafe) || (graficaVisible === 'ranking' && !rankingSvgSafe)">
+                <p>No hay datos suficientes para generar esta gráfica.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="showGraficasModal = false">CERRAR VENTANA</button>
+    </div>
+  </div>
+</div>
+ }
+
+  
+
+</div>
+</div>
 
 
-<button (click)="cargarAnalisis()">
-  Ver análisis del deporte
-</button>
-<button (click)="regresarDeportes()">
-    Volver a Deportes
-</button>
+<!-- SECCION MODAL CAMBIAR ASIGNACION-->
+ @if (showEditarCoachModal) {
+  <div class="modal" >
+    <form [formGroup]="editarCoachForm">
+      <div class="modal-header">
+      <span class="cosib-logo">COSIB</span>
+      <div class="modal-title">
+        <h2>Asignar nuevo Coach</h2>
+        <p>UAM-I Casa abierta al tiempo</p>
+      </div>
+    </div>
+      
 
-<section class="graficas" *ngIf="analisisSvg">
-  <div [innerHTML]="analisisSvg"></div>
-  <div [innerHTML]="rankingSvg"></div>
-</section>
+      <select formControlName="usuario_id">
+        <option value="">Seleccione Coach</option>
+        <option *ngFor="let c of coaches" [value]="c.id">
+          {{ c.nombre }}
+        </option>
+      </select>
 
-<section class="grid">
-  <article
-    class="card"
-    *ngFor="let atleta of atletas"
-    (click)="verAtleta(atleta.id)"
-  >
-    <h3>{{ atleta.nombre }}</h3>
-    <p>Matrícula: {{ atleta.matricula }}</p>
-  </article>
-</section>
+      <button (click)="updateCoach()">Asignar</button>
+      <button (click)="deleteAssignment()"> Eliminar coach Actual</button>
+      <button (click)="showEditarCoachModal = false">Cancelar</button>
+    </form>
+  </div>
+ }
+
+
+
+<!-- MODAL CREAR ATLETA (Estilo Institucional) -->
+<div class="modal" *ngIf="showCrearAtletaModal">
+  <form [formGroup]="atletaForm">
+    <div class="modal-header">
+      <span class="cosib-logo">COSIB</span>
+      <div class="modal-title">
+        <h2>Registrar nuevo Atleta</h2>
+        <p>UAM-I Casa abierta al tiempo</p>
+      </div>
+    </div>
+    <div class="form-grid">
+      <span class="required-tag">* Campos Obligatorios *</span>
+      <div class="field" >
+        <label>Nombre del Atleta:</label>
+        <input formControlName="nombre" placeholder="Juan López" />
+      </div>
+
+      <div class="field">
+        <label>Matrícula:</label>
+        <input formControlName="matricula" placeholder="22030..." />
+      </div>
+
+      <div class="field">
+        <label>Email:</label>
+        <input formControlName="correo" placeholder="ejemplo@uam.mx" />
+      </div>
+
+      <div class="field">
+        <label>Fecha de Nacimiento:</label>
+        <input type="date" formControlName="fecha_nacimiento" />
+      </div>
+
+      <div class="field">
+        <label>Peso (kg):</label>
+        <input type="number" formControlName="peso" />
+      </div>
+
+      <div class="field">
+        <label>Altura (cm):</label>
+        <input type="number" formControlName="altura" />
+      </div>
+
+      <div class="field full-width">
+        <label class="checkbox-label">
+          <input type="checkbox" formControlName="activo" /> Atleta con estatus activo
+        </label>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-submit" (click)="openCreateAthlete()">REGISTRAR</button>
+      <button class="btn-cancel" (click)="showCrearAtletaModal = false">CANCELAR</button>
+    </div> 
+  </form>
+</div>

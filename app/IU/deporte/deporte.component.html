@@ -1,125 +1,128 @@
+<div class="page-wrapper">
+
 <app-shared-header themeClass="theme-green">
-  <h1>⚽ Panel de Deportes <br>
-    @if (esCoordinador()) {
+  <h1> Panel de Deportes <br>
+    @if (isCoordinator()) {
       <span>Bienvenido, Coordinador</span>
     } @else {
       <span>Bienvenido, Entrenador</span>
     }
-    
   </h1>
-  
 </app-shared-header>
+
 <section class="header">
-  
-        @if (esCoordinador()) {
-          <label for="busqueda">Buscar:</label>
-          <input
-            type="text"
-            [(ngModel)]="search"
-            placeholder="Nombre de un deporte"
-          />
-          <button (click)="buscar()">Buscar</button>
-          
-            <button (click)="abrirNuevo()">Nuevo Deporte</button>
-            <div *ngIf="cargando">cargando</div>
-            <button (click)="showUsuarioModal = true">Crear nuevo usuario</button>
-            <button (click)="showAsignarModal = true">Asignar Coach</button>
-  
-        }
- 
-
-  
+  @if (isCoordinator()) { 
+      <button (click)="openNew()">Nuevo Deporte</button>
+      @if (cargando) {
+        <div >cargando</div>
+      }
+       
+      <button (click)="showUsuarioModal = true">Crear nuevo usuario</button>
+      <button (click)="showAsignarModal = true">Asignar Coach</button>
+      <div>
+        <label for="busqueda">Buscar:</label>
+        <input
+          type="text"
+          [(ngModel)]="search"
+          placeholder="Nombre de un deporte"
+        />
+        <button (click)="searchName()">Buscar</button>
+      </div>
+  }
 </section>
-<div class="error-banner" *ngIf="errorEliminar">
-  {{ errorEliminar }}
-</div>
+
+@if (errorEliminar) {
+  <div class="error-banner">
+    {{ errorEliminar }}
+  </div>
+}
+
 <section class="grid">
-  <article
-    class="card"
-    *ngFor="let deporte of deportes"
-    (click)="irAlumnos(deporte.id)"
-  >
-  
-    <h3>{{ deporte.nombre }}</h3>
-   
-
-<img [src]="deporte.imagenBase64 || 'assets/placeholder.png'" 
-     alt="Imagen de {{deporte.nombre}}" 
-     class="imagen" />
-    <h3>{{rol}}</h3>
-
-    <div class="actions" *ngIf="esCoordinador()">
-      <button (click)="abrirEditar(deporte); $event.stopPropagation()">Editar</button>
-      <button (click)="eliminar(deporte.id, deporte.nombre); $event.stopPropagation()">Eliminar</button>
-      
-
-    </div>
+  <article class="card" *ngFor="let deporte of deportes" (click)="goStudents(deporte.id)">
+    <img [src]="deporte.imagenBase64 " 
+    alt="Imagen de {{deporte.nombre}}" class="imagen" />
+    <h3>{{deporte.nombre}} <br> cupo:{{deporte.num_atletas}}/30</h3>
+    
+    @if (isCoordinator()) {
+      <div class="actions">
+        <button (click)="openEdit(deporte); $event.stopPropagation()">Editar</button>
+        <button (click)="delete(deporte.id, deporte.nombre); $event.stopPropagation()">Eliminar</button>
+      </div>
+    }    
   </article>
 </section>
 <!-- MODAL DEPORTE -->
-<div class="modal" *ngIf="showDeporteModal">
-  <form [formGroup]="deporteForm">
-    <h2>Nuevo Deporte</h2>
-    <input formControlName="nombre" placeholder="Nombre *" />
-    <textarea formControlName="descripcion" placeholder="Descripción"></textarea>
-    <input type="file" (change)="onFileSelected($event)" />
-    <button (click)="crearDeporte()">Guardar</button>
-    <button (click)="showDeporteModal = false">Cancelar</button>
-  </form>
-</div>
+ @if (showDeporteModal) {
+    <div class="modal">
+      <form [formGroup]="sportForm">
+        <h2>Nuevo Deporte</h2>
+        <input formControlName="nombre" placeholder="Nombre *" />
+        <textarea formControlName="descripcion" placeholder="Descripción"></textarea>
+        <input type="file" (change)="onFileSelected($event)" />
+        <button (click)="createSport()">Guardar</button>
+        <button (click)="showDeporteModal = false">Cancelar</button>
+      </form>
+    </div>
+ }
 
 <!-- MODAL USUARIO -->
-<div class="modal" *ngIf="showUsuarioModal">
-  <form [formGroup]="usuarioForm">
-    <h2>Nuevo Usuario</h2>
-    <input formControlName="nombre" placeholder="Nombre" />
-    <input formControlName="correo" placeholder="Correo" />
-    <input formControlName="matricula" placeholder="Matrícula" />
-    <input type="password" formControlName="contrasena" placeholder="Contraseña" />
-    <select formControlName="rol">
-      <option value="coach">Coach</option>
-      <option value="entrenador">Entrenador</option>
-    </select>
-    <button (click)="crearUsuario()">Guardar</button>
-    <button (click)="showUsuarioModal = false">Cancelar</button>
-  </form>
-</div>
+ @if (showUsuarioModal) {
+  <div class="modal" >
+    <form [formGroup]="userForm">
+      <h2>Nuevo Usuario</h2>
+      <input formControlName="nombre" placeholder="Nombre" />
+      <input formControlName="correo" placeholder="Correo" />
+      <input formControlName="matricula" placeholder="Matrícula" />
+      <input type="password" formControlName="contrasena" placeholder="Contraseña" />
+      <select formControlName="rol">
+        <option value="coach">Coach</option>
+        <option value="entrenador">Entrenador</option>
+      </select>
+      <button (click)="createUser()">Guardar</button>
+      <button (click)="showUsuarioModal = false">Cancelar</button>
+    </form>
+  </div>
+ }
 
 <!-- MODAL ASIGNAR -->
-<div class="modal" *ngIf="showAsignarModal">
-  <form [formGroup]="asignarForm">
-    <h2>Asignar Coach</h2>
+ @if (showAsignarModal) {
+  <div class="modal">
+    <form [formGroup]="assignForm">
+      <h2>Asignar Coach</h2>
 
-    <select formControlName="usuario_id">
-      <option value="">Seleccione Coach</option>
-      <option *ngFor="let c of coaches" [value]="c.id">
-        {{ c.nombre }}
-      </option>
-    </select>
+      <select formControlName="usuario_id">
+        <option value="">Seleccione Coach</option>
+        <option *ngFor="let c of coaches" [value]="c.id">
+          {{ c.nombre }}
+        </option>
+      </select>
 
-    <select formControlName="deporte_id">
-      <option value="">Seleccione Deporte</option>
-      <option *ngFor="let d of deportes" [value]="d.id">
-        {{ d.nombre }}
-      </option>
-    </select>
+      <select formControlName="deporte_id">
+        <option value="">Seleccione Deporte</option>
+        <option *ngFor="let d of deportes" [value]="d.id">
+          {{ d.nombre }}
+        </option>
+      </select>
 
-    <button (click)="asignarCoach()">Asignar</button>
-    <button (click)="showAsignarModal = false">Cancelar</button>
+      <button (click)="assignCoach()">Asignar</button>
+      <button (click)="showAsignarModal = false">Cancelar</button>
+    </form>
+  </div>
+ }
+
+ @if (showActualizarDeporteForm) {
+
+<div class="modal">
+  <form [formGroup]="editForm">
+    <h2>Editar Deporte</h2>
+    <input formControlName="nombre" placeholder="Nombre *" />
+    <textarea formControlName="descripcion"></textarea>
+    <input type="file" (change)="onFileSelected($event)" />
+    <button (click)="updateSport()">Actualizar</button>
+    <button (click)="showActualizarDeporteForm = false">Cancelar</button>
   </form>
 </div>
 
+ }
 
-<div class="modal" *ngIf="showActualizarDeporteForm">
-  <form [formGroup]="editarForm">
-    <h2>Editar Deporte</h2>
-
-    <input formControlName="nombre" placeholder="Nombre *" />
-    <textarea formControlName="descripcion"></textarea>
-
-    <input type="file" (change)="onFileSelected($event)" />
-
-    <button (click)="actualizarDeporte()">Actualizar</button>
-    <button (click)="showActualizarDeporteForm = false">Cancelar</button>
-  </form>
 </div>
