@@ -84,7 +84,7 @@ export class AlumnosComponent implements OnInit{
       next: (res: any) => {
                       console.log('Datos recibidos de Análisis:', res); // <--- MIRA ESTO EN CONSOLA
 
-        const base64 = res.grafica || res.graficas?.grafica_svg || res.base64;
+        const base64 = res.grafica_svg || res.graficas?.grafica_svg || res.base64;
         
         if (base64) {
           const decoded = atob(base64);

@@ -19,6 +19,7 @@
        
       <button (click)="showUsuarioModal = true">Crear nuevo usuario</button>
       <button (click)="showAsignarModal = true">Asignar Coach</button>
+      <button class="btn-uam" (click)="openUsersList()">VER USUARIOS</button>
       <div>
         <label for="busqueda">Buscar:</label>
         <input
@@ -75,8 +76,8 @@
       <input formControlName="matricula" placeholder="Matrícula" />
       <input type="password" formControlName="contrasena" placeholder="Contraseña" />
       <select formControlName="rol">
-        <option value="coach">Coach</option>
-        <option value="entrenador">Entrenador</option>
+          <option value="coordinador">Coordinador</option>
+          <option value="coach">Coach</option>
       </select>
       <button (click)="createUser()">Guardar</button>
       <button (click)="showUsuarioModal = false">Cancelar</button>
@@ -124,5 +125,88 @@
 </div>
 
  }
+
+
+<!-- MODAL 1: LISTA DE USUARIOS -->
+<div class="modal modal-xl" *ngIf="showUsersModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <span class="cosib-logo">COSIB</span>
+      <div class="modal-title">
+        <h2>Administración de Usuarios</h2>
+        <p>Lista de personal activo</p>
+      </div>
+      <button class="close-btn" (click)="showUsersModal = false">&times;</button>
+    </div>
+
+    <div class="user-list-scroll">
+      <table class="uam-table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Matrícula</th>
+            <th>Rol</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of usuarios">
+            <td>{{ user.nombre }}</td>
+            <td>{{ user.matricula }}</td>
+            <td><span class="role-badge">{{ user.rol }}</span></td>
+            <td class="table-actions">
+              <button class="btn-edit-small" (click)="openEditUser(user.id)"> Editar</button>
+              <button class="btn-delete-small" (click)="confirmDeleteUser(user.id, user.nombre)">🗑️ Eliminar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL 2: EDICIÓN DE USUARIO -->
+<div class="modal" *ngIf="showEditUserModal">
+  <form [formGroup]="editUserForm" (ngSubmit)="confirmUpdateUser()">
+    <div class="modal-header">
+      <span class="cosib-logo">COSIB</span>
+      <div class="modal-title">
+        <h2>Editar Usuario</h2>
+        <p>Actualizar credenciales</p>
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <div class="field">
+        <label>Nombre Completo:</label>
+        <input formControlName="nombre" />
+      </div>
+      <div class="field">
+        <label>Matrícula:</label>
+        <input formControlName="matricula" />
+      </div>
+      <div class="field">
+        <label>Email:</label>
+        <input formControlName="correo" />
+      </div>
+      <div class="field">
+        <label>Rol:</label>
+        <select formControlName="rol">
+          <option value="coordinador">Coordinador</option>
+          <option value="coach">Coach</option>
+        </select>
+      </div>
+      <div class="field full-width">
+        <label>Nueva Contraseña (o actual):</label>
+        <input type="password" formControlName="contrasena" />
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button type="submit" class="btn-submit">GUARDAR CAMBIOS</button>
+      <button type="button" class="btn-cancel" (click)="showEditUserModal = false">CANCELAR</button>
+    </div>
+  </form>
+</div>
 
 </div>

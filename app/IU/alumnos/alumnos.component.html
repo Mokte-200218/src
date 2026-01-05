@@ -34,7 +34,7 @@
                       <p class="matricula">Matrícula: {{ atleta.matricula }}</p>
                       </div>
                     <span class="status-badge" [class.inactive]="!atleta.activo">
-                      {{ atleta.activo ? 'Activo' : 'Inactivo' }} <br>
+                      {{ atleta.activo ? 'Activo' : 'inactive' }} <br>
                       
                     </span>
                 
@@ -179,7 +179,7 @@
       <span class="required-tag">* Campos Obligatorios *</span>
       <div class="field" >
         <label>Nombre del Atleta:</label>
-        <input formControlName="nombre" placeholder="Juan López" />
+        <input formControlName="nombre" placeholder="Nombre con apellidos" />
       </div>
 
       <div class="field">
@@ -189,22 +189,22 @@
 
       <div class="field">
         <label>Email:</label>
-        <input formControlName="correo" placeholder="ejemplo@uam.mx" />
+        <input formControlName="correo" placeholder="alumno@izt.uam.mx" />
       </div>
 
       <div class="field">
         <label>Fecha de Nacimiento:</label>
-        <input type="date" formControlName="fecha_nacimiento" />
+        <input type="date" formControlName="fecha_nacimiento"  />
       </div>
 
       <div class="field">
         <label>Peso (kg):</label>
-        <input type="number" formControlName="peso" />
+        <input type="number" formControlName="peso" placeholder="60" />
       </div>
 
       <div class="field">
         <label>Altura (cm):</label>
-        <input type="number" formControlName="altura" />
+        <input type="number" formControlName="altura" placeholder="160" />
       </div>
 
       <div class="field full-width">

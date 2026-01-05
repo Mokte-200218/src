@@ -6,7 +6,7 @@ import { AuthService } from '../../services/auth.service';
 import { Deporte, DeporteUpdateRequest } from '../../interfaces/deporte.model';
 import { Router } from '@angular/router';
 import { SharedHeaderComponent } from '../shared-header/shared-header.component';
-import { Usuario } from '../../interfaces/Usuario';
+import { Usuario, usuarioid, UsuarioResponse } from '../../interfaces/Usuario';
  
 @Component({
   selector: 'app-deportes',
@@ -29,6 +29,12 @@ export class DeportesComponent implements OnInit {
   deporteEditandoId: number | null = null;
   imagenSeleccionada: File | null = null;
 
+  usuarios: usuarioid[] = [];
+  usuarioSeleccionadoId: number | null = null;
+
+  showUsersModal = false;
+  showEditUserModal = false;
+
   showDeporteModal = false;
   showUsuarioModal = false;
   showAsignarModal = false;
@@ -36,6 +42,15 @@ export class DeportesComponent implements OnInit {
   cargando = false;
 
   // Formularios
+   // Formulario de edición usuario
+  editUserForm = this.fb.group({
+    nombre: ['', Validators.required],
+    correo: ['', [Validators.required, Validators.email]],
+    rol: ['coach', Validators.required],
+    contrasena: ['', Validators.required],
+    matricula: ['', Validators.required]
+  });
+
 
   //Formulario para editar deporte
   editForm = this.fb.group({
@@ -193,17 +208,26 @@ export class DeportesComponent implements OnInit {
     this.showActualizarDeporteForm = true;
   }
 
-  //actualiza y prepara variables para abrir el formulario de asignacion de coach a deporte
+    //actualiza y prepara variables para abrir el formulario de asignacion de coach a deporte
+
   assignCoach() {
-    if (this.assignForm.invalid) return;
-    this.deportesService.assignCoach(this.assignForm.value as any).subscribe({
-      next: () => {
-        alert('Coach asignado exitosamente');
-        this.showAsignarModal = false;
-      },
-      error: () => alert('Error al asignar coach')
-    });
-  }
+  if (this.assignForm.invalid) return;
+
+  this.deportesService.assignCoach(this.assignForm.value as any).subscribe({
+    next: (res: any) => {
+      // res.id es el ID de la tabla 'deporte_usuario' (la relación)
+      if (res && res.id) {
+        const depId = this.assignForm.value.deporte_id;
+        // Guardamos el ID de la asignación usando el ID del deporte como clave
+        localStorage.setItem(`coach_assignment_id_${depId}`, res.id.toString());
+      }
+      alert('Coach asignado exitosamente');
+      this.showAsignarModal = false;
+      this.loadSport();
+    },
+    error: () => alert('Error al asignar coach')
+  });
+}
 
   //hacer la peticion createUser y cerrar modal
   createUser() {
@@ -277,6 +301,61 @@ delete(id: number, nombre: string) {
   // ir a la interfaz de los atletas del deporte
   goStudents(deporteId: number) {
     this.router.navigate(['/alumnos', deporteId]);
+  }
+
+  // Abrir lista de usuarios
+  openUsersList() {
+    this.showUsersModal = true;
+    this.loadAllUsers();
+  }
+
+  loadAllUsers() {
+    this.deportesService.getUsersObservable().subscribe({
+      next: (data) => this.usuarios = data,
+      error: () => alert('Error al cargar la lista de usuarios')
+    });
+  }
+
+  // Abrir modal de edición prellenado
+  openEditUser(id: number) {
+    this.usuarioSeleccionadoId = id;
+    this.deportesService.getUserById(id).subscribe({
+      next: (user) => {
+        this.editUserForm.patchValue({
+          nombre: user.nombre,
+          correo: user.correo,
+          rol: user.rol,
+          matricula: user.matricula,
+          contrasena: '' // Por seguridad se suele dejar vacío para nueva entrada
+        });
+        this.showEditUserModal = true;
+      }
+    });
+  }
+
+  confirmUpdateUser() {
+    if (this.editUserForm.invalid || !this.usuarioSeleccionadoId) return;
+
+    this.deportesService.updateUser(this.usuarioSeleccionadoId, this.editUserForm.value as Usuario).subscribe({
+      next: () => {
+        alert('Usuario actualizado con éxito');
+        this.showEditUserModal = false;
+        this.loadAllUsers(); // Refrescar la lista del primer modal
+      },
+      error: () => alert('Error al actualizar usuario')
+    });
+  }
+
+  confirmDeleteUser(id: number, nombre: string) {
+    if (!confirm(`¿Estás seguro de desactivar al usuario ${nombre}?`)) return;
+
+    this.deportesService.deleteUser(id).subscribe({
+      next: () => {
+        alert('Usuario eliminado (marcado como inactivo)');
+        this.loadAllUsers();
+      },
+      error: () => alert('Error al eliminar usuario')
+    });
   }
 
   // verificar que el usuario sea coordinador

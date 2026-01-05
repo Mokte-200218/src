@@ -4,6 +4,7 @@ $bg-beige: #f6f1e3;
 $text-black: #1a1a1a;
 $error-red: #ff3131;
 $card-overlay: rgba(181, 185, 231, 0.7); // Tono lila/azul de la imagen
+$uam-blue: #3498db;
 
 
 // --- SECCIÓN BUSCADOR ---
@@ -253,4 +254,121 @@ $card-overlay: rgba(181, 185, 231, 0.7); // Tono lila/azul de la imagen
 @keyframes slideDown {
   from { transform: translateY(-20px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
+}
+// --- ESTILO DE LA TABLA DE USUARIOS ---
+.user-list-scroll {
+  background: white;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  overflow: hidden;
+  margin-bottom: 20px;
+
+  .uam-table {
+    width: 100%;
+    border-collapse: collapse;
+    
+    th {
+      background: #333;
+      color: white;
+      padding: 15px;
+      text-align: left;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+    }
+
+    td {
+      padding: 12px 15px;
+      border-bottom: 1px solid #eee;
+      color: $text-black;
+      font-size: 1rem;
+    }
+
+    tr:hover { background-color: #fcfaf2; }
+  }
+}
+
+// --- FORMULARIO DE EDICIÓN (GRID) ---
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    label { font-weight: bold; margin-bottom: 5px; color: #000; }
+    input, select {
+      padding: 12px;
+      border-radius: 8px;
+      border: 2px solid #ccc;
+      font-size: 1rem;
+      &:focus { border-color: $uam-green; outline: none; }
+    }
+    &.full-width { grid-column: span 2; }
+  }
+}
+
+// --- BOTONES (ESTILO 3D) ---
+.btn-submit {
+  background-color: $uam-green;
+  color: white;
+  border: none;
+  padding: 15px 40px;
+  border-radius: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 5px 0 darken($uam-green, 15%);
+  transition: all 0.1s ease;
+  text-transform: uppercase;
+
+  &:hover { background-color: $uam-dark-green; transform: translateY(-2px); box-shadow: 0 7px 0 darken($uam-dark-green, 15%); }
+  &:active { transform: translateY(3px); box-shadow: 0 2px 0 rgba(0,0,0,0.2); }
+}
+
+.btn-cancel {
+  background: transparent;
+  color: #666;
+  border: none;
+  text-decoration: underline;
+  cursor: pointer;
+  font-weight: bold;
+  &:hover { color: black; }
+}
+
+// --- BOTONES PEQUEÑOS DE LA TABLA ---
+.btn-edit-small {
+  background: $uam-blue;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  margin-right: 5px;
+  font-weight: bold;
+  &:hover { filter: brightness(1.1); }
+}
+
+.btn-delete-small {
+  background: $error-red;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  &:hover { filter: brightness(1.1); }
+}
+
+// --- ANIMACIONES ---
+@keyframes modalSlideIn {
+  from { opacity: 0; transform: translateY(-30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-footer {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
 }

@@ -1,8 +1,10 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Deporte, DeporteCreateRequest, DeporteUpdateRequest } from '../interfaces/deporte.model';
-import { Usuario, UsuarioResponse } from '../interfaces/Usuario';
+import { Usuario, UsuarioResponse, usuarioid } from '../interfaces/Usuario';
 import { DeporteUsuarioRequest } from '../interfaces/deporte-usuario';
+import { Observable } from 'rxjs';
+
 
 @Injectable({ providedIn: 'root' })
 export class DeportesService {
@@ -18,6 +20,7 @@ export class DeportesService {
   getById(id: number) {
     return this.http.get<Deporte>(`${this.API_URL}/deportes/${id}`);
   }
+  
    //crear deporte
   createSport(data: DeporteCreateRequest) {
     const formData = new FormData();
@@ -60,6 +63,9 @@ export class DeportesService {
   getUsers() {
     return this.http.get<Usuario[]>(`${this.API_URL}/usuarios`);
   }
+  getUsersObservable(): Observable<usuarioid[]> {
+   return this.http.get<usuarioid[]>(`${this.API_URL}/usuarios`);
+  }
 
   //Crea asignacion de un coach a un deporte
   assignCoach(data: DeporteUsuarioRequest) {
@@ -78,5 +84,19 @@ export class DeportesService {
   //eliminar deporte
   delete(id: number) {
     return this.http.delete(`${this.API_URL}/deportes/${id}`);
+  }
+
+ 
+
+  getUserById(id: number): Observable<usuarioid> {
+    return this.http.get<usuarioid>(`${this.API_URL}/usuarios/${id}`);
+  }
+
+  updateUser(id: number, data: Usuario): Observable<UsuarioResponse> {
+    return this.http.put<UsuarioResponse>(`${this.API_URL}/usuarios/${id}`, data);
+  }
+
+  deleteUser(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.API_URL}/usuarios/${id}`);
   }
 }

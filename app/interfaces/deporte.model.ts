@@ -4,8 +4,6 @@ export interface Deporte {
   descripcion?: string;
   imagen_nombre?: string;
   num_atletas?: number;
-
-  // SOLO FRONTEND
   imagenBase64?: string;
 }
 
