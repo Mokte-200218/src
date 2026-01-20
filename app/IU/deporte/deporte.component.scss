@@ -1,29 +1,374 @@
+$uam-green: #5ca823;
+$uam-dark-green: #1a512e;
+$bg-beige: #f6f1e3;
+$text-black: #1a1a1a;
+$error-red: #ff3131;
+$card-overlay: rgba(181, 185, 231, 0.7); // Tono lila/azul de la imagen
+$uam-blue: #3498db;
+
+
+// --- SECCIÓN BUSCADOR ---
 .header {
   display: flex;
-  gap: 10px;
+  justify-content: center;
   align-items: center;
-  margin-bottom: 20px;
+  gap: 15px;
+  padding: 20px 20px;
+  flex-wrap: wrap;
+
+  label {
+    font-size: 1.8rem;
+    font-weight: 500;
+  }
+
+  input {
+    padding: 10px 20px;
+    border-radius: 25px;
+    border: 2px solid #888;
+    width: 300px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.3s;
+
+    &:focus {
+      border-color: $uam-green;
+    }
+  }
+
+  button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    transition: transform 0.2s;
+    &:hover { transform: scale(1.1); }
+  }
 }
 
+// --- CUADRÍCULA DE DEPORTES ---
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 30px;
+  padding: 0 10%;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 .card {
-  border: 1px solid #ddd;
-  padding: 10px;
+  position: relative;
+  height: 180px;
+  border-radius: 20px;
+  overflow: hidden;
   cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  background-color: #fff;
+
+  &:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 12px 20px rgba(0,0,0,0.2);
+  }
+
+  .imagen {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  // Overlay con el nombre (Estilo de la imagen)
+  h3 {
+    position: absolute;
+    bottom: 15%;
+    left: 5%;
+    background: $card-overlay;
+    color: white;
+    margin: 0;
+    padding: 5px 25px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    text-transform: capitalize;
+    z-index: 2;
+    pointer-events: none;
+    min-width: 120px;
+    text-align: center;
+  }
+
+  .actions {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 5px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 3;
+
+    button {
+      padding: 5px 10px;
+      border-radius: 5px;
+      border: none;
+      font-size: 0.7rem;
+      cursor: pointer;
+      background: white;
+      color: black;
+      &:hover { background: #eee; }
+    }
+  }
+
+  &:hover .actions {
+    opacity: 1;
+  }
 }
 
-.card img {
-  width: 100%;
-  height: 140px;
-  object-fit: cover;
+// --- BOTONES GRANDES (Bottom) ---
+.header { // Reutilizamos para los botones de acción
+  button:not(.btn-search) {
+    background-color: $uam-green;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 0 darken($uam-green, 15%);
+    transition: all 0.2s;
+    margin: 5px;
+
+    &:hover {
+      background-color: $uam-dark-green;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 0 darken($uam-dark-green, 15%);
+    }
+
+    &:active {
+      transform: translateY(2px);
+      box-shadow: 0 0 0;
+    }
+  }
 }
 
-.actions {
+// --- MODALES (Estilo vistaModal) ---
+.modal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
+  animation: fadeIn 0.3s ease;
+  overflow: auto;
+
+  form {
+    background: $bg-beige;
+    width: 90%;
+    max-width: 700px;
+    padding: 40px;
+    border-radius: 20px;
+    position: relative;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+
+    // Encabezado del modal (COSIB y Texto)
+    h2 {
+      font-size: 2rem;
+      font-weight: 800;
+      text-align: right;
+      border-bottom: 6px solid black;
+      padding-bottom: 10px;
+      margin-bottom: 30px;
+      text-transform: italic;
+      &::before {
+        content: 'COSI B';
+        float: left;
+        font-size: 3rem;
+        letter-spacing: -2px;
+      }
+    }
+
+    // Grid de inputs
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+
+    h2, .full-width { grid-column: span 2; }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      background: white;
+    }
+
+    // Etiqueta de campo obligatorio
+    &::after {
+      content: '*CAMPO OBLIGATORIO*';
+      color: $error-red;
+      font-size: 0.7rem;
+      font-weight: bold;
+      grid-column: span 2;
+      margin-top: -10px;
+    }
+
+    button {
+      grid-column: span 2;
+      background-color: $uam-green;
+      color: white;
+      padding: 15px;
+      border-radius: 15px;
+      border: none;
+      font-weight: bold;
+      text-transform: uppercase;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: background 0.3s;
+
+      &:hover { background-color: $uam-dark-green; }
+      &.cancel { background-color: #888; margin-top: 5px; }
+    }
+  }
+}
+
+// --- ANIMACIONES ---
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.error-banner {
+  background: $error-red;
+  color: white;
+  padding: 15px;
+  text-align: center;
+  margin: 20px 10%;
+  border-radius: 10px;
+  font-weight: bold;
+  animation: slideDown 0.4s ease;
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+// --- ESTILO DE LA TABLA DE USUARIOS ---
+.user-list-scroll {
+  background: white;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  overflow: hidden;
+  margin-bottom: 20px;
+
+  .uam-table {
+    width: 100%;
+    border-collapse: collapse;
+    
+    th {
+      background: #333;
+      color: white;
+      padding: 15px;
+      text-align: left;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+    }
+
+    td {
+      padding: 12px 15px;
+      border-bottom: 1px solid #eee;
+      color: $text-black;
+      font-size: 1rem;
+    }
+
+    tr:hover { background-color: #fcfaf2; }
+  }
+}
+
+// --- FORMULARIO DE EDICIÓN (GRID) ---
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    label { font-weight: bold; margin-bottom: 5px; color: #000; }
+    input, select {
+      padding: 12px;
+      border-radius: 8px;
+      border: 2px solid #ccc;
+      font-size: 1rem;
+      &:focus { border-color: $uam-green; outline: none; }
+    }
+    &.full-width { grid-column: span 2; }
+  }
+}
+
+// --- BOTONES (ESTILO 3D) ---
+.btn-submit {
+  background-color: $uam-green;
+  color: white;
+  border: none;
+  padding: 15px 40px;
+  border-radius: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 5px 0 darken($uam-green, 15%);
+  transition: all 0.1s ease;
+  text-transform: uppercase;
+
+  &:hover { background-color: $uam-dark-green; transform: translateY(-2px); box-shadow: 0 7px 0 darken($uam-dark-green, 15%); }
+  &:active { transform: translateY(3px); box-shadow: 0 2px 0 rgba(0,0,0,0.2); }
+}
+
+.btn-cancel {
+  background: transparent;
+  color: #666;
+  border: none;
+  text-decoration: underline;
+  cursor: pointer;
+  font-weight: bold;
+  &:hover { color: black; }
+}
+
+// --- BOTONES PEQUEÑOS DE LA TABLA ---
+.btn-edit-small {
+  background: $uam-blue;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  margin-right: 5px;
+  font-weight: bold;
+  &:hover { filter: brightness(1.1); }
+}
+
+.btn-delete-small {
+  background: $error-red;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  &:hover { filter: brightness(1.1); }
+}
+
+// --- ANIMACIONES ---
+@keyframes modalSlideIn {
+  from { opacity: 0; transform: translateY(-30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-footer {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
 }

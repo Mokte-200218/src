@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Documento } from '../interfaces/documento.model';
+import { DocumentoAtleta } from '../interfaces/documento-atleta.model';
 
 @Injectable({ providedIn: 'root' })
 export class DocumentosService {
@@ -8,7 +8,7 @@ export class DocumentosService {
   private API = 'http://localhost:8000';
 
   getByAtleta(atletaId: number) {
-    return this.http.get<Documento[]>(`${this.API}/documentos/atleta/${atletaId}`);
+    return this.http.get<DocumentoAtleta[]>(`${this.API}/documentos/atleta/${atletaId}`);
   }
 
   upload(atletaId: number, file: File) {

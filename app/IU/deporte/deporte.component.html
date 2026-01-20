@@ -1,44 +1,212 @@
+<div class="page-wrapper">
+
 <app-shared-header themeClass="theme-green">
-  <h1>⚽ Panel de Deportes</h1>
-  <span>Bienvenido, Admin</span>
+  <h1> Panel de Deportes <br>
+    @if (isCoordinator()) {
+      <span>Bienvenido, Coordinador</span>
+    } @else {
+      <span>Bienvenido, Entrenador</span>
+    }
+  </h1>
 </app-shared-header>
+
 <section class="header">
-  <h2>Deportes</h2>
-
-  <input
-    type="text"
-    [(ngModel)]="search"
-    placeholder="Buscar deporte"
-  />
-  <button (click)="buscar()">Buscar</button>
-        @if (esCoordinador()) {
-          <p class="btn-New-Sport">
-            <button >+ Nuevo Deporte</button>
-            <button >+ Crear nuevo usuario </button>
-            <button >Asignar coach a deporte </button>
-          </p>
-        }
- 
-
-  
+  @if (isCoordinator()) { 
+      <button (click)="openNew()">Nuevo Deporte</button>
+      @if (cargando) {
+        <div >cargando</div>
+      }
+       
+      <button (click)="showUsuarioModal = true">Crear nuevo usuario</button>
+      <button (click)="showAsignarModal = true">Asignar Coach</button>
+      <button class="btn-uam" (click)="openUsersList()">VER USUARIOS</button>
+      <div>
+        <label for="busqueda">Buscar:</label>
+        <input
+          type="text"
+          [(ngModel)]="search"
+          placeholder="Nombre de un deporte"
+        />
+        <button (click)="searchName()">Buscar</button>
+      </div>
+  }
 </section>
+
+@if (errorEliminar) {
+  <div class="error-banner">
+    {{ errorEliminar }}
+  </div>
+}
 
 <section class="grid">
-  <article
-    class="card"
-    *ngFor="let deporte of deportes"
-    (click)="irAlumnos(deporte.id)"
-  >
-   
-    <h3> {{deporte.id}} </h3>
-    <h3>{{ deporte.nombre }}</h3>
-    <p>{{ deporte.descripcion }}</p>
-    <h3>{{deporte.imagen_nombre}}</h3>
-    <h3>{{rol}}</h3>
-
-    <div class="actions" *ngIf="esCoordinador()">
-      <button (click)="$event.stopPropagation()">Editar</button>
-      <button (click)="eliminar(deporte.id); $event.stopPropagation()">Eliminar</button>
-    </div>
+  <article class="card" *ngFor="let deporte of deportes" (click)="goStudents(deporte.id)">
+    <img [src]="deporte.imagenBase64 " 
+    alt="Imagen de {{deporte.nombre}}" class="imagen" />
+    <h3>{{deporte.nombre}} <br> cupo:{{deporte.num_atletas}}/30</h3>
+    
+    @if (isCoordinator()) {
+      <div class="actions">
+        <button (click)="openEdit(deporte); $event.stopPropagation()">Editar</button>
+        <button (click)="delete(deporte.id, deporte.nombre); $event.stopPropagation()">Eliminar</button>
+      </div>
+    }    
   </article>
 </section>
+<!-- MODAL DEPORTE -->
+ @if (showDeporteModal) {
+    <div class="modal">
+      <form [formGroup]="sportForm">
+        <h2>Nuevo Deporte</h2>
+        <input formControlName="nombre" placeholder="Nombre *" />
+        <textarea formControlName="descripcion" placeholder="Descripción"></textarea>
+        <input type="file" (change)="onFileSelected($event)" />
+        <button (click)="createSport()">Guardar</button>
+        <button (click)="showDeporteModal = false">Cancelar</button>
+      </form>
+    </div>
+ }
+
+<!-- MODAL USUARIO -->
+ @if (showUsuarioModal) {
+  <div class="modal" >
+    <form [formGroup]="userForm">
+      <h2>Nuevo Usuario</h2>
+      <input formControlName="nombre" placeholder="Nombre" />
+      <input formControlName="correo" placeholder="Correo" />
+      <input formControlName="matricula" placeholder="Matrícula" />
+      <input type="password" formControlName="contrasena" placeholder="Contraseña" />
+      <select formControlName="rol">
+          <option value="coordinador">Coordinador</option>
+          <option value="coach">Coach</option>
+      </select>
+      <button (click)="createUser()">Guardar</button>
+      <button (click)="showUsuarioModal = false">Cancelar</button>
+    </form>
+  </div>
+ }
+
+<!-- MODAL ASIGNAR -->
+ @if (showAsignarModal) {
+  <div class="modal">
+    <form [formGroup]="assignForm">
+      <h2>Asignar Coach</h2>
+
+      <select formControlName="usuario_id">
+        <option value="">Seleccione Coach</option>
+        <option *ngFor="let c of coaches" [value]="c.id">
+          {{ c.nombre }}
+        </option>
+      </select>
+
+      <select formControlName="deporte_id">
+        <option value="">Seleccione Deporte</option>
+        <option *ngFor="let d of deportes" [value]="d.id">
+          {{ d.nombre }}
+        </option>
+      </select>
+
+      <button (click)="assignCoach()">Asignar</button>
+      <button (click)="showAsignarModal = false">Cancelar</button>
+    </form>
+  </div>
+ }
+
+ @if (showActualizarDeporteForm) {
+
+<div class="modal">
+  <form [formGroup]="editForm">
+    <h2>Editar Deporte</h2>
+    <input formControlName="nombre" placeholder="Nombre *" />
+    <textarea formControlName="descripcion"></textarea>
+    <input type="file" (change)="onFileSelected($event)" />
+    <button (click)="updateSport()">Actualizar</button>
+    <button (click)="showActualizarDeporteForm = false">Cancelar</button>
+  </form>
+</div>
+
+ }
+
+
+<!-- MODAL 1: LISTA DE USUARIOS -->
+<div class="modal modal-xl" *ngIf="showUsersModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <span class="cosib-logo">COSIB</span>
+      <div class="modal-title">
+        <h2>Administración de Usuarios</h2>
+        <p>Lista de personal activo</p>
+      </div>
+      <button class="close-btn" (click)="showUsersModal = false">&times;</button>
+    </div>
+
+    <div class="user-list-scroll">
+      <table class="uam-table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Matrícula</th>
+            <th>Rol</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of usuarios">
+            <td>{{ user.nombre }}</td>
+            <td>{{ user.matricula }}</td>
+            <td><span class="role-badge">{{ user.rol }}</span></td>
+            <td class="table-actions">
+              <button class="btn-edit-small" (click)="openEditUser(user.id)"> Editar</button>
+              <button class="btn-delete-small" (click)="confirmDeleteUser(user.id, user.nombre)">🗑️ Eliminar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL 2: EDICIÓN DE USUARIO -->
+<div class="modal" *ngIf="showEditUserModal">
+  <form [formGroup]="editUserForm" (ngSubmit)="confirmUpdateUser()">
+    <div class="modal-header">
+      <span class="cosib-logo">COSIB</span>
+      <div class="modal-title">
+        <h2>Editar Usuario</h2>
+        <p>Actualizar credenciales</p>
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <div class="field">
+        <label>Nombre Completo:</label>
+        <input formControlName="nombre" />
+      </div>
+      <div class="field">
+        <label>Matrícula:</label>
+        <input formControlName="matricula" />
+      </div>
+      <div class="field">
+        <label>Email:</label>
+        <input formControlName="correo" />
+      </div>
+      <div class="field">
+        <label>Rol:</label>
+        <select formControlName="rol">
+          <option value="coordinador">Coordinador</option>
+          <option value="coach">Coach</option>
+        </select>
+      </div>
+      <div class="field full-width">
+        <label>Nueva Contraseña (o actual):</label>
+        <input type="password" formControlName="contrasena" />
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button type="submit" class="btn-submit">GUARDAR CAMBIOS</button>
+      <button type="button" class="btn-cancel" (click)="showEditUserModal = false">CANCELAR</button>
+    </div>
+  </form>
+</div>
+
+</div>

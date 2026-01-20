@@ -6,15 +6,15 @@
   <div>Total documentos: {{ metrics.total_documentos }}</div>
 </section>
 
-<button (click)="cargarGrafica()">Ver gráfica global</button>
+<button (click)="loadGrafic()">Ver gráfica global</button>
 
 <div *ngIf="svgGlobal" [innerHTML]="svgGlobal"></div>
 
 <hr />
 
-<section *ngIf="esCoordinador()">
+<section *ngIf="isCoordinator()">
   <h3>Exportaciones</h3>
 
-  <button (click)="descargarCSV()">Exportar CSV</button>
-  <button (click)="descargarPDF()">Exportar PDF</button>
+  <button (click)="downloadCsv()">Exportar CSV</button>
+  <button (click)="downloadPDF()">Exportar PDF</button>
 </section>
